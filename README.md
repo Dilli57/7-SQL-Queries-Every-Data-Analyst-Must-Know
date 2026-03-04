@@ -1,0 +1,1 @@
+# 7-SQL-Queries-Every-Data-Analyst-Must-Know
