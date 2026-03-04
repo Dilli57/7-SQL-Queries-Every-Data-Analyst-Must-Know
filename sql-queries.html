@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 SQL Queries Every Data Analyst Must Know</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #a8ff3e;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --card: #15151f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 72px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 6px 16px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .header-tag::before, .header-tag::after {
+    content: '//';
+    margin: 0 8px;
+    opacity: 0.5;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 62px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  h1 span.hl {
+    color: var(--accent);
+  }
+
+  h1 span.hl2 {
+    color: var(--accent2);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Cards grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--card-accent, var(--accent));
+  }
+
+  .card:hover .card-glow {
+    opacity: 1;
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top left, var(--card-accent, var(--accent)) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(20px);
+  }
+
+  /* accent colors per card */
+  .card:nth-child(1) { --card-accent: #00e5ff; animation-delay: 0.05s; }
+  .card:nth-child(2) { --card-accent: #ff6b35; animation-delay: 0.1s; }
+  .card:nth-child(3) { --card-accent: #a8ff3e; animation-delay: 0.15s; }
+  .card:nth-child(4) { --card-accent: #c77dff; animation-delay: 0.2s; }
+  .card:nth-child(5) { --card-accent: #ffd166; animation-delay: 0.25s; }
+  .card:nth-child(6) { --card-accent: #ff4dac; animation-delay: 0.3s; }
+  .card:nth-child(7) { --card-accent: #00f5a0; animation-delay: 0.35s; }
+
+  .card-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .card-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--card-accent, var(--accent));
+    letter-spacing: 0.15em;
+    opacity: 0.6;
+    min-width: 28px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--card-accent, var(--accent));
+  }
+
+  .card-desc {
+    padding: 14px 22px 6px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* Code block */
+  .code-block {
+    margin: 12px 16px 18px;
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 16px 18px;
+    font-size: 11.5px;
+    line-height: 1.75;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block::before {
+    content: 'SQL';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--border);
+  }
+
+  .kw { color: #00e5ff; font-weight: 700; }
+  .fn { color: #a8ff3e; }
+  .str { color: #ffd166; }
+  .cm { color: #3a3a55; font-style: italic; }
+  .tbl { color: #ff9a5c; }
+  .col { color: #e8e8f0; }
+  .op { color: #c77dff; }
+
+  /* Use case tag */
+  .use-case {
+    margin: 0 16px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    color: var(--card-accent, var(--accent));
+    border-color: var(--card-accent, var(--accent));
+    opacity: 0.6;
+    border-radius: 1px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">Data Analyst Essentials</div>
+    <h1>7 SQL Queries<br><span class="hl">Every</span> Analyst<br><span class="hl2">Must Know</span></h1>
+    <p class="subtitle">// from joins to ranking — the core toolkit //</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- 1. JOIN -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">01</span>
+        <span class="card-title">JOIN</span>
+      </div>
+      <p class="card-desc">Combine rows from two or more tables based on a related column. The foundation of relational data analysis.</p>
+      <div class="code-block"><span class="kw">SELECT</span> <span class="tbl">o</span>.order_id, <span class="tbl">c</span>.name,
+       <span class="tbl">o</span>.total_amount
+<span class="kw">FROM</span>   <span class="tbl">orders</span> <span class="col">o</span>
+<span class="kw">  INNER JOIN</span> <span class="tbl">customers</span> <span class="col">c</span>
+    <span class="kw">ON</span> <span class="tbl">o</span>.customer_id <span class="op">=</span> <span class="tbl">c</span>.id
+<span class="kw">WHERE</span>  <span class="tbl">o</span>.status <span class="op">=</span> <span class="str">'completed'</span>;</div>
+      <div class="use-case">
+        <span class="tag">INNER</span>
+        <span class="tag">LEFT</span>
+        <span class="tag">RIGHT</span>
+        <span class="tag">FULL OUTER</span>
+      </div>
+    </div>
+
+    <!-- 2. GROUP BY -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">02</span>
+        <span class="card-title">GROUP BY</span>
+      </div>
+      <p class="card-desc">Aggregate rows sharing common values. Pairs with COUNT, SUM, AVG, MAX, MIN to summarize data.</p>
+      <div class="code-block"><span class="kw">SELECT</span>   region,
+         <span class="fn">COUNT</span>(<span class="op">*</span>)        <span class="kw">AS</span> total_orders,
+         <span class="fn">SUM</span>(revenue)  <span class="kw">AS</span> total_revenue,
+         <span class="fn">AVG</span>(revenue)  <span class="kw">AS</span> avg_order
+<span class="kw">FROM</span>     <span class="tbl">sales</span>
+<span class="kw">GROUP BY</span> region
+<span class="kw">HAVING</span>   <span class="fn">SUM</span>(revenue) <span class="op">></span> <span class="str">10000</span>
+<span class="kw">ORDER BY</span> total_revenue <span class="kw">DESC</span>;</div>
+      <div class="use-case">
+        <span class="tag">Aggregation</span>
+        <span class="tag">Summarization</span>
+        <span class="tag">HAVING</span>
+      </div>
+    </div>
+
+    <!-- 3. WINDOW FUNCTIONS -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">03</span>
+        <span class="card-title">WINDOW FUNCTIONS</span>
+      </div>
+      <p class="card-desc">Perform calculations across rows related to the current row — without collapsing them like GROUP BY does.</p>
+      <div class="code-block"><span class="kw">SELECT</span> employee, dept, salary,
+  <span class="fn">AVG</span>(salary) <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> dept
+  ) <span class="kw">AS</span> dept_avg,
+  salary <span class="op">-</span> <span class="fn">AVG</span>(salary) <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> dept
+  ) <span class="kw">AS</span> diff_from_avg
+<span class="kw">FROM</span> <span class="tbl">employees</span>;</div>
+      <div class="use-case">
+        <span class="tag">PARTITION BY</span>
+        <span class="tag">ORDER BY</span>
+        <span class="tag">ROWS/RANGE</span>
+      </div>
+    </div>
+
+    <!-- 4. CASE -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">04</span>
+        <span class="card-title">CASE</span>
+      </div>
+      <p class="card-desc">SQL's conditional logic. Build custom categories, flag data, or pivot rows into columns on the fly.</p>
+      <div class="code-block"><span class="kw">SELECT</span> customer_id, total_spend,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> total_spend <span class="op">>=</span> <span class="str">5000</span> <span class="kw">THEN</span> <span class="str">'Platinum'</span>
+    <span class="kw">WHEN</span> total_spend <span class="op">>=</span> <span class="str">1000</span> <span class="kw">THEN</span> <span class="str">'Gold'</span>
+    <span class="kw">WHEN</span> total_spend <span class="op">>=</span> <span class="str">250</span>  <span class="kw">THEN</span> <span class="str">'Silver'</span>
+    <span class="kw">ELSE</span> <span class="str">'Bronze'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> tier
+<span class="kw">FROM</span> <span class="tbl">customers</span>;</div>
+      <div class="use-case">
+        <span class="tag">Segmentation</span>
+        <span class="tag">Binning</span>
+        <span class="tag">Pivoting</span>
+      </div>
+    </div>
+
+    <!-- 5. CTE -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">05</span>
+        <span class="card-title">CTE</span>
+      </div>
+      <p class="card-desc">Common Table Expressions create named temporary result sets, making complex queries modular and readable.</p>
+      <div class="code-block"><span class="kw">WITH</span> <span class="fn">monthly_revenue</span> <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, sale_date)
+           <span class="kw">AS</span> month,
+         <span class="fn">SUM</span>(amount) <span class="kw">AS</span> revenue
+  <span class="kw">FROM</span>   <span class="tbl">sales</span>
+  <span class="kw">GROUP BY</span> <span class="str">1</span>
+)
+<span class="kw">SELECT</span> month, revenue,
+  revenue <span class="op">-</span> <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span>
+    (<span class="kw">ORDER BY</span> month) <span class="kw">AS</span> mom_change
+<span class="kw">FROM</span> <span class="fn">monthly_revenue</span>;</div>
+      <div class="use-case">
+        <span class="tag">Readability</span>
+        <span class="tag">Reuse</span>
+        <span class="tag">Recursive</span>
+      </div>
+    </div>
+
+    <!-- 6. SUBQUERY -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">06</span>
+        <span class="card-title">SUBQUERY</span>
+      </div>
+      <p class="card-desc">A query nested inside another. Use in SELECT, FROM, or WHERE to filter or compute against derived results.</p>
+      <div class="code-block"><span class="kw">SELECT</span> product_name, price
+<span class="kw">FROM</span>   <span class="tbl">products</span>
+<span class="kw">WHERE</span>  price <span class="op">></span> (
+  <span class="cm">-- scalar subquery: single value</span>
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(price)
+  <span class="kw">FROM</span>   <span class="tbl">products</span>
+)
+<span class="kw">AND</span>    category_id <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> id <span class="kw">FROM</span> <span class="tbl">categories</span>
+  <span class="kw">WHERE</span>  active <span class="op">=</span> <span class="str">true</span>
+);</div>
+      <div class="use-case">
+        <span class="tag">Scalar</span>
+        <span class="tag">Correlated</span>
+        <span class="tag">IN / EXISTS</span>
+      </div>
+    </div>
+
+    <!-- 7. RANK -->
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <span class="card-num">07</span>
+        <span class="card-title">RANK</span>
+      </div>
+      <p class="card-desc">Assign rankings to rows within partitions. RANK skips ties, DENSE_RANK doesn't, ROW_NUMBER is always unique.</p>
+      <div class="code-block"><span class="kw">SELECT</span> salesperson, region, revenue,
+  <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> region
+    <span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>
+  ) <span class="kw">AS</span> rank,
+  <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> region
+    <span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>
+  ) <span class="kw">AS</span> dense_rank
+<span class="kw">FROM</span> <span class="tbl">sales_performance</span>;</div>
+      <div class="use-case">
+        <span class="tag">RANK()</span>
+        <span class="tag">DENSE_RANK()</span>
+        <span class="tag">ROW_NUMBER()</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    SQL Reference &nbsp;·&nbsp; Data Analyst Toolkit &nbsp;·&nbsp; 7 Essential Patterns
+  </footer>
+
+</div>
+</body>
+</html>
